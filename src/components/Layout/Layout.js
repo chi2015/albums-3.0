@@ -99,10 +99,22 @@ const Layout = () => {
 		setSelectedId(null);
 	};
 
-	const onSaved = () => {
+	const onSaved = (response) => {
 		setDrawerOpen(false);
 		setSelectedId(null);
-		setLoading(true); // Triggers a refetch via the loading effect.
+		// If the server echoed back a year/month (add and edit do), jump the filter to
+		// that date so the just-saved album is visible. The year/month effect will then
+		// trigger the reload, so we don't also flip `loading` here in that branch.
+		if (response && response.year && response.month) {
+			const nextYear = String(response.year);
+			const nextMonth = pad2(response.month);
+			if (nextYear !== year || nextMonth !== month) {
+				setYear(nextYear);
+				setMonth(nextMonth);
+				return;
+			}
+		}
+		setLoading(true);
 	};
 
 	const onDrawerError = (msg) => {
