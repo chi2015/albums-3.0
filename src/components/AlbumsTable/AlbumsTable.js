@@ -71,11 +71,18 @@ const Meta = glamorous.div({
 
 const Scroll = glamorous.div({
 	width: '100%',
-	overflowX: 'auto'
+	overflowX: 'auto',
+	// Soft fade on the right edge hints that more content is scrollable horizontally;
+	// only visible when the table actually overflows.
+	WebkitOverflowScrolling: 'touch'
 });
 
 const Table = glamorous.table({
 	width: '100%',
+	// Keep the table at a readable width even when the viewport is narrow — the Scroll
+	// wrapper provides horizontal scrolling on tablet/mobile instead of squishing columns
+	// to the point that headers collide and content disappears.
+	minWidth: 760,
 	borderCollapse: 'collapse',
 	tableLayout: 'fixed'
 });
@@ -93,6 +100,10 @@ const Th = glamorous.th(
 		padding: '10px 12px',
 		fontWeight: 600,
 		whiteSpace: 'nowrap',
+		// Without these, the header label can overflow into the next column when a
+		// narrow viewport squeezes table-layout: fixed columns below the label's width.
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
 		userSelect: 'none',
 		borderBottom: `1px solid ${colors.borderSoft}`,
 		background: colors.surfaceAlt
@@ -103,6 +114,7 @@ const Th = glamorous.th(
 		':hover': sortable ? { color: colors.ink } : null
 	})
 );
+
 
 const ThInner = glamorous.span({
 	display: 'inline-flex',
@@ -278,13 +290,20 @@ const LinkCell = glamorous.a({
 	display: 'inline-flex',
 	alignItems: 'center',
 	gap: 4,
-	padding: '4px 6px',
+	padding: '4px 8px',
 	borderRadius: radius.sm,
 	color: colors.inkSoft,
 	textDecoration: 'none',
 	border: `1px solid ${colors.borderSoft}`,
 	background: colors.surface,
+	whiteSpace: 'nowrap',
+	// Explicitly disable text truncation so the "Open" label can never trigger an
+	// ellipsis ("...") next to the icon, even if a parent style would otherwise.
+	textOverflow: 'clip',
+	overflow: 'visible',
 	transition: `background ${motion.fast}, color ${motion.fast}, border-color ${motion.fast}`,
+	':focus': { outline: 'none' },
+	':focus-visible': { boxShadow: shadow.focus },
 	':hover': { background: colors.accentSoft, color: colors.accentHover, borderColor: colors.accent, textDecoration: 'none' }
 });
 
@@ -295,8 +314,8 @@ const COLUMN_DEFS = [
 	{ key: 'artist', label: 'Artist / Title', sortable: true, sortField: 'artist', hideable: false, width: 'auto' },
 	{ key: 'year', label: 'Year', sortable: true, sortField: 'year', hideable: true, width: 80, align: 'left' },
 	{ key: 'month', label: 'Month', sortable: true, sortField: 'month', hideable: true, width: 110, align: 'left' },
-	{ key: 'copyright', label: 'Copyright', sortable: true, sortField: 'copyright', hideable: true, width: 200 },
-	{ key: 'itunes', label: 'iTunes', sortable: false, hideable: true, width: 90, align: 'left' }
+	{ key: 'copyright', label: 'Copyright', sortable: true, sortField: 'copyright', hideable: true, width: 300 },
+	{ key: 'itunes', label: 'iTunes', sortable: false, hideable: true, width: 110, align: 'left' }
 ];
 
 const SORT_DEFAULT = { field: 'year', dir: 'desc' };
@@ -498,8 +517,10 @@ const AlbumsTable = ({ albums, openEditModal, selectedId, onSelect }) => {
 										case 'copyright':
 											return <Td key="copyright" muted>{album.copyright || ''}</Td>;
 										case 'itunes':
+											// Force overflow:visible + textOverflow:clip on this specific cell so the
+											// "Open" link can never be truncated with an ellipsis next to the icon.
 											return (
-												<Td key="itunes">
+												<Td key="itunes" style={{ overflow: 'visible', textOverflow: 'clip' }}>
 													{album.itunes_link ? (
 														<LinkCell
 															href={album.itunes_link}
