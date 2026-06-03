@@ -14,9 +14,9 @@ export const colors = {
 	border: '#d9ceb7',
 	borderSoft: '#ece2cd',
 	borderStrong: '#bfb39a',
-	accent: '#9a3a1c',
-	accentHover: '#7d2d12',
-	accentSoft: '#f3e0d2',
+	accent: '#0e166e',
+	accentHover: '#0a1059',
+	accentSoft: '#e2e4f6',
 	accentInk: '#ffffff',
 	danger: '#9c2c2c',
 	dangerHover: '#7a1f1f',
@@ -55,7 +55,7 @@ export const shadow = {
 	sm: '0 1px 2px rgba(40, 30, 15, 0.06)',
 	md: '0 6px 18px rgba(40, 30, 15, 0.08), 0 2px 4px rgba(40, 30, 15, 0.04)',
 	lg: '0 24px 48px rgba(40, 30, 15, 0.16), 0 6px 16px rgba(40, 30, 15, 0.08)',
-	focus: `0 0 0 3px rgba(154, 58, 28, 0.22)`
+	focus: `0 0 0 3px rgba(14, 22, 110, 0.22)`
 };
 
 export const motion = {
