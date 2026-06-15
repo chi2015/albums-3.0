@@ -84,7 +84,12 @@ const Table = glamorous.table({
 	// to the point that headers collide and content disappears.
 	minWidth: 760,
 	borderCollapse: 'collapse',
-	tableLayout: 'fixed'
+	// 'auto' layout lets the Artist column be genuinely greedy: it expands to fit the
+	// longest visible artist name rather than being capped at whatever leftover pixels
+	// remain after fixed columns claim their share. Fixed columns still get their
+	// colgroup widths as strong hints; the Scroll wrapper scrolls horizontally if the
+	// total exceeds the viewport instead of squishing the artist column.
+	tableLayout: 'auto'
 });
 
 const Thead = glamorous.thead({
@@ -165,18 +170,13 @@ const ArtistText = glamorous.div({
 	...type.body,
 	fontWeight: 500,
 	color: colors.ink,
-	overflow: 'hidden',
-	textOverflow: 'ellipsis',
 	whiteSpace: 'nowrap'
 });
 
 const TitleText = glamorous.div({
 	...type.bodySm,
 	color: colors.inkMuted,
-	overflow: 'hidden',
-	textOverflow: 'ellipsis',
 	whiteSpace: 'nowrap',
-	[breakpoints.phone]: { whiteSpace: 'normal' }
 });
 
 const StackedCell = glamorous.div({
@@ -501,7 +501,7 @@ const AlbumsTable = ({ albums, openEditModal, selectedId, onSelect }) => {
 											);
 										case 'artist':
 											return (
-												<Td key="artist">
+												<Td key="artist" style={{ overflow: 'visible', textOverflow: 'clip' }}>
 													<StackedCell>
 														<StackedCellText>
 															<ArtistText>{album.artist || '—'}</ArtistText>
